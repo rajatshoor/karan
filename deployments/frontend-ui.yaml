@@ -1,0 +1,38 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-ui
+  namespace: frontend
+spec:
+  selector:
+    matchLabels:
+      app: frontend-ui
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: frontend-ui
+    spec:
+      containers:
+      - name: frontend-ui
+        image: gcr.io/$PROJECT_ID/frontend-ui:$SHORT_SHA
+        ports:
+        - containerPort: 80
+      imagePullSecrets:
+      - name: regcred
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-service
+  namespace: frontend
+spec:
+  selector:
+    app: frontend-ui
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: LoadBalancer
